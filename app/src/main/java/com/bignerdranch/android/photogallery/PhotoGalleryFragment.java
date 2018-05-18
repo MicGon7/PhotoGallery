@@ -161,8 +161,8 @@ public class PhotoGalleryFragment extends Fragment {
         // Load URL images using Picasso
         public void bindGalleryItem(GalleryItem galleryItem) {
             Picasso.get().load(galleryItem.getUrl())
-                    .placeholder(R.drawable.bill_up_close).
-                    into(mItemImageView);
+                    .placeholder(mProgressBar.getIndeterminateDrawable())
+                    .into(mItemImageView);
         }
     }
 
