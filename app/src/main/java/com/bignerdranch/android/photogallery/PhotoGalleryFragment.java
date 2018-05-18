@@ -1,11 +1,8 @@
 package com.bignerdranch.android.photogallery;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,14 +14,12 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.SearchEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.PicassoProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +28,7 @@ public class PhotoGalleryFragment extends Fragment {
 
     private static final String TAG = "PhotoGalleryFragment";
     private RecyclerView mPhotoRecyclerView;
+    private ProgressBar mProgressBar;
     private List<GalleryItem> mItems = new ArrayList<>();
     private ThumbnailDownloader<PhotoHolder> mThumbnailDownloader;
 
@@ -128,6 +124,7 @@ public class PhotoGalleryFragment extends Fragment {
 
         mPhotoRecyclerView = v.findViewById(R.id.photo_recycler_view);
         mPhotoRecyclerView.setLayoutManager(new GridLayoutManager((getActivity()), 3));
+        mProgressBar = v.findViewById(R.id.progressBar_cyclic);
 
         setupAdapter();
 
@@ -221,7 +218,6 @@ public class PhotoGalleryFragment extends Fragment {
 
         @Override
         protected List<GalleryItem> doInBackground(Void... params) {
-
             if (mQuery == null) {
                 return new FlickrFetchr().fetchRecentPhotos();
             } else {
@@ -233,6 +229,9 @@ public class PhotoGalleryFragment extends Fragment {
         protected void onPostExecute(List<GalleryItem> items) {
             mItems = items;
             setupAdapter();
+            mPhotoRecyclerView.setVisibility(View.VISIBLE);
+            mProgressBar.setVisibility(View.GONE);
+
         }
     }
 
