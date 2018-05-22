@@ -1,6 +1,5 @@
 package com.bignerdranch.android.photogallery;
 
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -30,7 +29,6 @@ public class PhotoGalleryFragment extends Fragment {
     private RecyclerView mPhotoRecyclerView;
     private ProgressBar mProgressBar;
     private List<GalleryItem> mItems = new ArrayList<>();
-    private ThumbnailDownloader<PhotoHolder> mThumbnailDownloader;
 
 
     public static PhotoGalleryFragment newInstance() {
@@ -44,24 +42,6 @@ public class PhotoGalleryFragment extends Fragment {
         setHasOptionsMenu(true);
         updateItems();
 
-
-//        // Picasso handles all of this!
-//        Handler responseHandler = new Handler();
-//
-//        mThumbnailDownloader = new ThumbnailDownloader<>(responseHandler);
-//        mThumbnailDownloader.setThumbnailDownloadListener(
-//                new ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder>() {
-//                    @Override
-//                    public void onThumbnailDownloaded(PhotoHolder photoHolder, Bitmap bitmap) {
-//                        Drawable drawable = new BitmapDrawable(getResources(), bitmap);
-//                        photoHolder.bindDrawable(drawable);
-//                    }
-//                }
-//        );
-//
-//        mThumbnailDownloader.start();
-//        mThumbnailDownloader.getLooper();
-//        Log.i(TAG, "Background thread started");
     }
 
     @Override
@@ -87,17 +67,23 @@ public class PhotoGalleryFragment extends Fragment {
                 Log.d(TAG, "QueryTextChange: " + newText);
                 return false;
             }
-
         });
-
 
         searchView.setOnSearchClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String query = QueryPreferences.getStoredQuery(getActivity());
-                searchView.setQuery(query,false);
+                searchView.setQuery(query, false);
             }
         });
+
+        MenuItem toggleItem = menu.findItem(R.id.menu_item_toggle_polling);
+        if (PollService.isServiceAlarmOn(getActivity())) {
+            toggleItem.setTitle(R.string.stop_polling);
+
+        } else {
+            toggleItem.setTitle(R.string.start_polling);
+        }
     }
 
     @Override
@@ -106,6 +92,11 @@ public class PhotoGalleryFragment extends Fragment {
             case R.id.menu_item_clear:
                 QueryPreferences.setStoredQuery(getActivity(), null);
                 updateItems();
+                return true;
+            case R.id.menu_item_toggle_polling:
+                boolean shouldStartAlarm = !PollService.isServiceAlarmOn(getActivity());
+                PollService.setServiceAlarm(getActivity(), shouldStartAlarm);
+                getActivity().invalidateOptionsMenu();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -134,13 +125,12 @@ public class PhotoGalleryFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        //mThumbnailDownloader.clearQueue();
+
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // mThumbnailDownloader.quit();
         Log.i(TAG, "Background thread destroyed");
     }
 
@@ -151,11 +141,6 @@ public class PhotoGalleryFragment extends Fragment {
             super(itemView);
 
             mItemImageView = itemView.findViewById(R.id.item_image_view);
-        }
-
-        // Not needed with picasso
-        public void bindDrawable(Drawable drawable) {
-            mItemImageView.setImageDrawable(drawable);
         }
 
         // Load URL images using Picasso
@@ -185,9 +170,7 @@ public class PhotoGalleryFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull PhotoHolder photoHolder, int position) {
             GalleryItem galleryItem = mGalleryItems.get(position);
-            //Drawable placeholder = getResources().getDrawable(R.drawable.bill_up_close);
             photoHolder.bindGalleryItem(galleryItem);
-            //mThumbnailDownloader.queueThumbnail(photoHolder, galleryItem.getUrl());
         }
 
         @Override

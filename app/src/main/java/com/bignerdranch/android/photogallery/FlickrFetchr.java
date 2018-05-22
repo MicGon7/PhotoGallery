@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FlickrFetchr {
+
+    //TODO: Convert to Retrofit and OKHTTP
     private static final String TAG = "FlickrFetchr";
     private static final String API_KEY = "5d5e7e780d59409ed7ebc75de604dcf9";
     private static final String FETCH_RECENTS_METHOD = "flickr.photos.getRecent";
@@ -100,6 +102,8 @@ public class FlickrFetchr {
     private void parseItems(List<GalleryItem> items, JSONObject jsonBody)
             throws IOException, JSONException {
 
+
+        // TODO: Convert to Gson
         JSONObject photosJsonObject = jsonBody.getJSONObject("photos");
         JSONArray photoJsonArray = photosJsonObject.getJSONArray("photo");
 
