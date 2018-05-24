@@ -66,10 +66,12 @@ public class PhotoPageFragment extends VisibleFragment {
 
 
         });
-        mWebView.setWebViewClient(new
-
-                WebViewClient());
+        mWebView.setWebViewClient(new WebViewClient());
         mWebView.loadUrl(mUri.toString());
         return v;
+    }
+
+    public WebView getWebView() {
+        return mWebView;
     }
 }
