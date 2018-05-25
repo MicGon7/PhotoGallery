@@ -63,15 +63,17 @@ public class PhotoPageFragment extends VisibleFragment {
                 AppCompatActivity activity = (AppCompatActivity) getActivity();
                 activity.getSupportActionBar().setSubtitle(title);
             }
-
-
         });
         mWebView.setWebViewClient(new WebViewClient());
         mWebView.loadUrl(mUri.toString());
         return v;
     }
 
-    public WebView getWebView() {
-        return mWebView;
+    public boolean goBack() {
+            if(mWebView.canGoBack()) {
+                mWebView.goBack();
+                return true;
+            }
+        return false;
     }
 }

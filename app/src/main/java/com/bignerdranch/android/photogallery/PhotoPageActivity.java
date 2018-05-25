@@ -23,14 +23,11 @@ public class PhotoPageActivity extends SingleFragmentActivity {
     @Override
     public void onBackPressed() {
 
-        // TODO: Ask Matt if this is the best implementation for this challenge (Interface maybe?)
+        // Maybe used interfaces in the future.
         FragmentManager fm = getSupportFragmentManager();
         PhotoPageFragment fragment = (PhotoPageFragment) fm.findFragmentById(R.id.fragment_container);
-        WebView webView = fragment.getWebView();
 
-        if (webView.canGoBack()) {
-            webView.goBack();
-        } else {
+        if(!fragment.goBack()) {
             super.onBackPressed();
         }
 
